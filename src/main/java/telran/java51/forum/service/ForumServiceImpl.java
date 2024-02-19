@@ -96,7 +96,7 @@ public class ForumServiceImpl implements ForumService {
 
 	@Override
 	public Iterable<MessageDto> findMessagesByTags(List<String> tags) {
-		return forumRepository.findByTagsIgnoreCase(tags)
+		return forumRepository.findByTagsInIgnoreCase(tags)
 				.map(m -> modelMapper.map(m, MessageDto.class))
 				.collect(Collectors.toList());
 	}	

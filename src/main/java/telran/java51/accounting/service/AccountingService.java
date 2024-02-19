@@ -19,4 +19,5 @@ public interface AccountingService {
 	RoleDto delRole(String login, String role);
 
 	void changePassword(String login, String newPassword);
+
 }

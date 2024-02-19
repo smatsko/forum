@@ -40,8 +40,8 @@ public class ForumController {
 	}
 
 	@DeleteMapping("/post/{postId}")
-	public MessageDto removeMessage(@PathVariable String id) {
-	    return forumService.removeMessage(id);	
+	public MessageDto removeMessage(@PathVariable String postId) {
+	    return forumService.removeMessage(postId);	
 	}
 
 	

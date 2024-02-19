@@ -12,8 +12,8 @@ import telran.java51.forum.model.Message;
 public interface ForumRepository extends CrudRepository<Message, String> {
 
 	Stream<Message> findByAuthorIgnoreCase(String user);
-	Stream<Message> findByTagsIgnoreCase(List<String> tags);
-	Stream<Message> findByDateCreatedBetween(LocalDate from, LocalDate to);
+	Stream<Message> findByTagsInIgnoreCase(List<String> tags);
+    Stream<Message> findByDateCreatedBetween(LocalDate from, LocalDate to);
 	
 }
 

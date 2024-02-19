@@ -10,4 +10,5 @@ public class ForumServiceApplication {
 		SpringApplication.run(ForumServiceApplication.class, args);
 	}
 
+
 }

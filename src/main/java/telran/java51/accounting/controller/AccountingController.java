@@ -32,6 +32,11 @@ public class AccountingController {
 		return accountingService.registerUser(newUserDto);
 	}
 
+	@PostMapping("/login")
+	public UserDto login(Principal principal) {
+		return accountingService.getUserByLogin(principal.getName());
+	}
+	
 	@GetMapping("/user/{login}")
 	public UserDto getUserByLogin(@PathVariable("login") String login) {
 		return accountingService.getUserByLogin(login);

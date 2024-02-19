@@ -14,11 +14,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "messageId")
 @Document(collection = "messages")
 public class Message {
 	@Id
-	String id;
+	String messageId;
 	@Setter
 	String title;
 	@Setter

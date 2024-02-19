@@ -49,7 +49,7 @@ public class AccountingServiceImpl implements AccountingService {
 	public UserDto updateUser( String login, UserDto userDto) {
 		User user = userRepository.findById(login).orElseThrow(UserNotFoundException::new);
 		if (userDto.getFirstName() != null) user.setFirstName(userDto.getFirstName());
-		if (userDto.getLastName() != null) user.setLastName(userDto.getFirstName());
+		if (userDto.getLastName() != null) user.setLastName(userDto.getLastName());
 		return modelMapper.map(userRepository.save(user), UserDto.class);		
 	}
 
@@ -70,9 +70,8 @@ public class AccountingServiceImpl implements AccountingService {
 	@Override
 	public void changePassword(String login, String newPassword) {
 		User user = userRepository.findById(login).orElseThrow(UserNotFoundException::new);
-		user.setPassword(newPassword);
+		user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
 		userRepository.save(user);
 	}
 
-	
 }
