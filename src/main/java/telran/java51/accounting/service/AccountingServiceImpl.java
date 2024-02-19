@@ -7,10 +7,11 @@ import telran.java51.accounting.dao.UserRepository;
 import telran.java51.accounting.dto.NewUserDto;
 import telran.java51.accounting.dto.RoleDto;
 import telran.java51.accounting.dto.UserDto;
-import telran.java51.accounting.dto.exceptions.UserAlreadyReported;
+import telran.java51.accounting.dto.exceptions.UserConflict;
 import telran.java51.accounting.model.User;
 import telran.java51.accounting.dto.exceptions.UserNotFoundException;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
 
 @Service
@@ -23,9 +24,11 @@ public class AccountingServiceImpl implements AccountingService {
 	@Override
 	public UserDto registerUser(NewUserDto newUserDto) {
 		if (!userRepository.findById(newUserDto.getLogin()).isEmpty()) {
-			throw new UserAlreadyReported();
+			throw new UserConflict();
 		}
 		User user = modelMapper.map(newUserDto, User.class);
+		String password = BCrypt.hashpw(newUserDto.getPassword(), BCrypt.gensalt());
+		user.setPassword(password );
 		return modelMapper.map(userRepository.save(user), UserDto.class);
 	}
 
@@ -64,4 +67,12 @@ public class AccountingServiceImpl implements AccountingService {
 		return modelMapper.map(userRepository.save(user), RoleDto.class);			
 	}
 
+	@Override
+	public void changePassword(String login, String newPassword) {
+		User user = userRepository.findById(login).orElseThrow(UserNotFoundException::new);
+		user.setPassword(newPassword);
+		userRepository.save(user);
+	}
+
+	
 }
