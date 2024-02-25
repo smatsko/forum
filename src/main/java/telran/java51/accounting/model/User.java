@@ -23,14 +23,14 @@ public class User {
 	@Setter
 	String lastName;
 	@Setter
-	Set<String> roles;
+	Set<RolesEnum> roles;
 
 	public User() {
-		roles = new HashSet<String>();
-		roles.add("USER");
+		roles = new HashSet<RolesEnum>();
+		roles.add(RolesEnum.USER);
 	}
 
-	public User(String login, String password, String firstName, String lastName, Set<String> roles) {
+	public User(String login, String password, String firstName, String lastName, Set<RolesEnum> roles) {
 		this();
 		this.login = login;
 		this.login = password;
@@ -39,11 +39,11 @@ public class User {
 		if (roles != null) this.roles.addAll(roles);
 	}
 
-	public void addRole(String role) {
+	public void addRole(RolesEnum role) {
 		roles.add(role);
 	}
 
-	public void delRole(String role) {
+	public void delRole(RolesEnum role) {
 		roles.remove(role);
 	}
 

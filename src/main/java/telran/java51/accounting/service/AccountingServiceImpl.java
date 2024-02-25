@@ -8,6 +8,7 @@ import telran.java51.accounting.dto.NewUserDto;
 import telran.java51.accounting.dto.RoleDto;
 import telran.java51.accounting.dto.UserDto;
 import telran.java51.accounting.dto.exceptions.UserConflict;
+import telran.java51.accounting.model.RolesEnum;
 import telran.java51.accounting.model.User;
 import telran.java51.accounting.dto.exceptions.UserNotFoundException;
 
@@ -54,14 +55,14 @@ public class AccountingServiceImpl implements AccountingService {
 	}
 
 	@Override
-	public RoleDto addRole(String login, String role) {
+	public RoleDto addRole(String login, RolesEnum role) {
 		User user = userRepository.findById(login).orElseThrow(UserNotFoundException::new);
 	    user.addRole(role); 	
 		return modelMapper.map(userRepository.save(user), RoleDto.class);			
 	}
 
 	@Override
-	public RoleDto delRole(String login, String role) {
+	public RoleDto delRole(String login, RolesEnum role) {
 		User user = userRepository.findById(login).orElseThrow(UserNotFoundException::new);
 	    user.delRole(role); 	
 		return modelMapper.map(userRepository.save(user), RoleDto.class);			

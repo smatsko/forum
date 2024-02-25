@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import telran.java51.accounting.dto.NewUserDto;
 import telran.java51.accounting.dto.RoleDto;
 import telran.java51.accounting.dto.UserDto;
+import telran.java51.accounting.model.RolesEnum;
 import telran.java51.accounting.service.AccountingService;
 
 @RestController
@@ -48,12 +49,12 @@ public class AccountingController {
 	}
 
 	@PutMapping("/user/{login}/role/{role}")
-	public RoleDto addRole(@PathVariable("login") String login, @PathVariable("role") String role ) {
+	public RoleDto addRole(@PathVariable("login") String login, @PathVariable("role") RolesEnum role ) {
 		return accountingService.addRole( login, role);		
 	}
 
 	@DeleteMapping("/user/{login}/role/{role}")
-	public RoleDto delRole(@PathVariable("login") String login, @PathVariable("role") String role ) {
+	public RoleDto delRole(@PathVariable("login") String login, @PathVariable("role") RolesEnum role ) {
 		return accountingService.delRole( login, role);		
 	}
 
