@@ -33,7 +33,7 @@ public class User {
 	public User(String login, String password, String firstName, String lastName, Set<String> roles) {
 		this();
 		this.login = login;
-		this.login = password;
+		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		if (roles != null) this.roles.addAll(roles);

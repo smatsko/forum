@@ -1,5 +1,6 @@
 package telran.java51.accounting.service;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.modelmapper.ModelMapper;
 
 @Service
 @RequiredArgsConstructor
-public class AccountingServiceImpl implements AccountingService {
+public class AccountingServiceImpl implements AccountingService, CommandLineRunner {
 
 	final UserRepository userRepository;
 	final ModelMapper modelMapper;
@@ -72,6 +73,18 @@ public class AccountingServiceImpl implements AccountingService {
 		User user = userRepository.findById(login).orElseThrow(UserNotFoundException::new);
 		user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
 		userRepository.save(user);
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		if (!userRepository.existsById("admin")) {
+			String password = BCrypt.hashpw("admin", BCrypt.gensalt());
+			User userAccount = new User("admin", password, "System", "Administrator", null);
+			userAccount.addRole("MODERATOR");
+			userAccount.addRole("ADMINISTRATOR");
+			userRepository.save(userAccount);
+		}
+		
 	}
 
 }

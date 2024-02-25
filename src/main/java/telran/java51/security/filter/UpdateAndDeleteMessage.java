@@ -2,11 +2,10 @@ package telran.java51.security.filter;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Base64;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.Filter;
@@ -15,17 +14,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import telran.java51.accounting.dao.UserRepository;
 import telran.java51.accounting.model.User;
+import telran.java51.forum.dao.ForumRepository;
+import telran.java51.forum.model.Message;
 
 @Component
+@Order(60)
 @RequiredArgsConstructor
-@Order(10)
-public class AuthenticationFilter implements Filter {
+public class UpdateAndDeleteMessage implements Filter {
 
+	final ForumRepository forumRepository;
 	final UserRepository userRepository;
 
 	@Override
@@ -33,52 +34,30 @@ public class AuthenticationFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) resp;
-
 		if (checkEndPoint(request.getMethod(), request.getServletPath())) {
-			User userAccount;
+			Principal principal = request.getUserPrincipal();
+			User user = userRepository.findById(principal.getName()).get();
+			String[] arr = request.getServletPath().split("/");
 			try {
-				String[] credentials = getCredentials(request.getHeader("Authorization"));
-				userAccount = userRepository.findById(credentials[0])
-						.orElseThrow(RuntimeException::new);
-				if (!BCrypt.checkpw(credentials[1], userAccount.getPassword())) {
-					throw new RuntimeException();
+				Message msg = forumRepository.findById(arr[arr.length - 1]).get();
+				if (!principal.getName().equalsIgnoreCase(msg.getAuthor())
+						&& (HttpMethod.DELETE.matches(request.getMethod()) && !user.getRoles().contains("MODERATOR"))) {
+					response.sendError(403);
+					return;
 				}
+
 			} catch (Exception e) {
-				response.sendError(401);
+				response.sendError(404);
 				return;
 			}
-			request = new WrappedRequest(request, userAccount.getLogin());
 		}
-		
 		chain.doFilter(request, response);
 
 	}
 
 	private boolean checkEndPoint(String method, String path) {
-		return !(
-				(HttpMethod.POST.matches(method) && path.matches("/account/register"))
-				|| path.matches("/forum/posts/\\w+(/\\w+)?")
-				);
+		return path.matches("/forum/post/\\w+")
+				&& (HttpMethod.DELETE.matches(method) || HttpMethod.PUT.matches(method));
 	}
 
-	private String[] getCredentials(String header) {
-		String token = header.split(" ")[1];
-		String decode = new String(Base64.getDecoder().decode(token));
-		return decode.split(":");
-	}
-
-	private class WrappedRequest extends HttpServletRequestWrapper {
-		private String login;
-
-		public WrappedRequest(HttpServletRequest request, String login) {
-			super(request);
-			this.login = login;
-		}
-
-		@Override
-		public Principal getUserPrincipal() {
-			return () -> login;
-		}
-
-	}
 }
